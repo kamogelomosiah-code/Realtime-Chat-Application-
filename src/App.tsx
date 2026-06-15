@@ -606,7 +606,7 @@ export default function App() {
                   <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center text-accent">
                     <Share2 size={15} />
                   </div>
-                  <h3 className="text-sm font-extrabold uppercase tracking-wider font-display">Invite Peers</h3>
+                  <h3 className="text-lg font-medium tracking-tight">Invite peers</h3>
                 </div>
                 <button
                   onClick={() => {
@@ -614,7 +614,7 @@ export default function App() {
                     setInviteEmail('');
                     setIsSendingSimulated(false);
                   }}
-                  className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-400 hover:text-zinc-100 transition-all cursor-pointer"
+                  className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-100 transition-all cursor-pointer"
                 >
                   <X size={16} />
                 </button>
@@ -625,46 +625,46 @@ export default function App() {
                   Invite friends to sync up onto this same channel frequency instantly! Enter their email to spawn an email draft with your signature or copy the connection link.
                 </p>
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[9px] uppercase tracking-wider font-bold text-zinc-400">Recipient Email Address</label>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-medium text-zinc-600 dark:text-zinc-400 px-1">Recipient email address</label>
                   <div className="relative">
                     <input
                       type="email"
                       value={inviteEmail}
                       onChange={(e) => setInviteEmail(e.target.value)}
                       placeholder="e.g. friend@example.com"
-                      className={`w-full pl-9 pr-4 py-2.5 rounded-xl text-xs font-sans focus:outline-none focus:ring-1 focus:ring-accent border ${
+                      className={`w-full pl-10 pr-4 py-3 rounded-full text-sm font-sans focus:outline-none border focus:ring-2 focus:ring-accent/50 focus:border-accent ${
                         theme === 'dark' 
-                          ? 'bg-zinc-905 border-zinc-850 text-white placeholder-zinc-700' 
-                          : 'bg-zinc-100 border-zinc-200 text-black placeholder-zinc-400'
+                          ? 'bg-zinc-900 border-zinc-800 text-white placeholder-zinc-500' 
+                          : 'bg-zinc-50 border-zinc-200 text-black placeholder-zinc-400'
                       }`}
                     />
-                    <Mail size={13} className="absolute left-3 top-3.5 text-zinc-500" />
+                    <Mail size={16} className="absolute left-4 top-3.5 text-zinc-400" />
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[9px] uppercase tracking-wider font-bold text-zinc-400">Your Signature Name</label>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-medium text-zinc-600 dark:text-zinc-400 px-1">Your signature name</label>
                   <input
                     type="text"
                     value={inviteSenderName}
                     onChange={(e) => setInviteSenderName(e.target.value)}
-                    placeholder={userName || "Your Pseudonym"}
-                    className={`w-full px-4 py-2.5 rounded-xl text-xs font-sans focus:outline-none focus:ring-1 focus:ring-accent border ${
+                    placeholder={userName || "Your name"}
+                    className={`w-full px-4 py-3 rounded-full text-sm font-sans focus:outline-none border focus:ring-2 focus:ring-accent/50 focus:border-accent ${
                       theme === 'dark' 
-                        ? 'bg-zinc-905 border-zinc-850 text-white placeholder-zinc-700' 
-                        : 'bg-zinc-100 border-zinc-200 text-black placeholder-zinc-400'
+                        ? 'bg-zinc-900 border-zinc-800 text-white placeholder-zinc-500' 
+                        : 'bg-zinc-50 border-zinc-200 text-black placeholder-zinc-400'
                     }`}
                   />
                 </div>
 
                 {/* Simulated Compose Preview Box */}
-                <div className={`p-3.5 rounded-2xl border text-[10px] space-y-1 block ${
-                  theme === 'dark' ? 'bg-zinc-950/50 border-zinc-900/80 text-zinc-400' : 'bg-zinc-50 border-zinc-200/50 text-zinc-650'
+                <div className={`p-4 rounded-3xl border text-xs space-y-2 block ${
+                  theme === 'dark' ? 'bg-zinc-900/50 border-zinc-800 text-zinc-400' : 'bg-zinc-50 border-zinc-200 text-zinc-600'
                 }`}>
-                  <div className="flex justify-between border-b border-zinc-800/40 pb-1.5 mb-1.5 font-bold uppercase tracking-wider text-[8px] text-zinc-505 dark:text-zinc-500">
-                    <span>Email Template Preview</span>
-                    <span className="text-accent text-[8px]">● High Fidelity</span>
+                  <div className="flex justify-between border-b border-zinc-200 dark:border-zinc-800 pb-2 mb-2 font-medium text-[10px] text-zinc-500 uppercase tracking-wide">
+                    <span>Template preview</span>
+                    <span className="text-accent">● High fidelity</span>
                   </div>
                   <p className="font-semibold text-zinc-350 dark:text-zinc-300">Subject: <span className="font-normal">Connect with me on Ephemeral Relay!</span></p>
                   <p className="leading-relaxed pt-1 font-mono">
@@ -711,14 +711,14 @@ export default function App() {
                       }, 1000);
                     }}
                     disabled={isSendingSimulated}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-accent text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-md hover:bg-accent/90 cursor-pointer active:scale-95 transition-all disabled:opacity-50"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-accent text-white rounded-full text-sm font-medium shadow-sm hover:bg-accent/90 cursor-pointer active:scale-95 transition-all disabled:opacity-50"
                   >
                     {isSendingSimulated ? (
-                      <span className="animate-pulse">Launching Email Client...</span>
+                      <span className="animate-pulse">Launching email client...</span>
                     ) : (
                       <>
-                        <Mail size={14} />
-                        <span>Open National Mail Draft</span>
+                        <Mail size={16} />
+                        <span>Open mail draft</span>
                       </>
                     )}
                   </button>
@@ -733,7 +733,7 @@ export default function App() {
                       setToasts((prev) => [...prev, {
                         id: tempId,
                         sender: "System",
-                        text: "📋 Frequency link copied to clipboard!",
+                        text: "📋 Link copied to clipboard!",
                         recipient: "You",
                         avatarName: "System"
                       }]);
@@ -742,14 +742,14 @@ export default function App() {
                       }, 5000);
                     }}
                     type="button"
-                    className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all cursor-pointer active:scale-95 ${
+                    className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium border transition-all cursor-pointer active:scale-95 ${
                       theme === 'dark' 
-                        ? 'hover:bg-zinc-900 border-zinc-800 text-zinc-305 hover:text-white' 
+                        ? 'hover:bg-zinc-800 border-zinc-700 text-zinc-300 hover:text-white' 
                         : 'hover:bg-zinc-100 border-zinc-200 text-zinc-700'
                     }`}
                   >
-                    {copiedLink ? <Check size={14} className="text-emerald-500" /> : <LinkIcon size={14} />}
-                    <span>{copiedLink ? "Link Copied!" : "Copy Share Link"}</span>
+                    {copiedLink ? <Check size={16} className="text-emerald-500" /> : <LinkIcon size={16} />}
+                    <span>{copiedLink ? "Link copied" : "Copy share link"}</span>
                   </button>
                 </div>
               </div>
@@ -765,12 +765,9 @@ export default function App() {
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="flex flex-col items-center justify-center h-[100dvh] bg-black text-white p-6 font-sans relative overflow-hidden"
+        className="flex flex-col items-center justify-center h-[100dvh] bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 p-6 font-sans relative overflow-hidden"
       >
-        {/* Ambient background glow */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-accent/5 rounded-full blur-[110px] pointer-events-none" />
-
-        <div className="w-full max-w-sm p-8 rounded-3xl border border-zinc-900 bg-zinc-950/40 backdrop-blur-md flex flex-col items-center text-center relative z-10 shadow-2xl">
+        <div className="w-full max-w-sm p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex flex-col items-center text-center relative z-10 shadow-lg">
           
           <AnimatePresence mode="wait">
             {landingStage === 'welcome' ? (
@@ -782,22 +779,22 @@ export default function App() {
                 transition={{ duration: 0.2 }}
                 className="w-full flex flex-col items-center"
               >
-                <div className="w-12 h-12 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent text-xl mb-4 font-mono select-none">
-                  📶
+                <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent text-xl mb-4 font-sans select-none">
+                  <Radio size={24} />
                 </div>
-                <h1 className="text-2xl font-extrabold mb-1 tracking-wider font-display uppercase">
-                  EPHEMERAL RELAY
+                <h1 className="text-2xl font-medium mb-1 tracking-tight">
+                  Ephemeral Relay
                 </h1>
-                <p className="text-zinc-500 text-xs tracking-widest font-display mb-8 uppercase">Minimalist Real-Time Chat</p>
+                <p className="text-zinc-500 text-sm mb-8">Minimalist real-time chat</p>
 
                 {/* ACTIVE PEERS CONTAINER */}
                 <div className="w-full text-left mb-6">
-                  <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest block mb-2.5">
-                    Live Channel Status
+                  <span className="text-xs text-zinc-500 font-medium tracking-wide block mb-2.5 px-1">
+                    Live channel status
                   </span>
                   
                   {onlineUsers.length > 0 ? (
-                    <div className="w-full bg-zinc-900/40 border border-zinc-900/85 px-4 py-3 rounded-2xl space-y-2.5">
+                    <div className="w-full bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 px-4 py-3 rounded-3xl space-y-2.5">
                       <div className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                         <span className="text-[11px] text-zinc-405 font-sans font-semibold">
@@ -817,27 +814,27 @@ export default function App() {
                       </div>
                     </div>
                   ) : (
-                    <div className="w-full bg-zinc-900/20 border border-zinc-900/60 px-4 py-4 rounded-2xl flex flex-col items-center text-center">
-                      <div className="w-6 h-6 rounded-full bg-zinc-900/60 border border-zinc-800/40 flex items-center justify-center text-xs opacity-50 mb-1.5">📡</div>
-                      <p className="text-zinc-500 text-xs font-sans font-medium">Frequency is quiet</p>
-                      <p className="text-[9px] text-zinc-650 max-w-[180px] leading-relaxed mt-0.5">Be the first to join and establish the stream!</p>
+                    <div className="w-full bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 px-4 py-4 rounded-3xl flex flex-col items-center text-center">
+                      <div className="w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-xs opacity-50 mb-1.5"><Radio size={12}/></div>
+                      <p className="text-zinc-500 text-sm font-medium">Frequency is quiet</p>
+                      <p className="text-xs text-zinc-400 max-w-[180px] leading-relaxed mt-0.5">Be the first to establish a stream</p>
                     </div>
                   )}
                 </div>
 
                 <button
                   onClick={() => setLandingStage('input_name')}
-                  className="px-8 py-3.5 bg-accent hover:bg-accent-hover text-white rounded-2xl font-bold transition-all text-xs tracking-wider font-sans uppercase shadow-md active:scale-95 w-full mb-3 cursor-pointer"
+                  className="px-6 py-2.5 bg-accent hover:bg-accent-hover text-white rounded-full font-medium transition-all text-sm shadow-sm active:scale-95 w-full mb-3 cursor-pointer"
                 >
-                  Start Chat
+                  Start chat
                 </button>
 
                 <button
                   onClick={() => setShowInviteModal(true)}
-                  className="px-8 py-3 border border-zinc-850 hover:bg-zinc-900 text-zinc-305 hover:text-white rounded-2xl font-semibold transition-all text-xs tracking-wider font-sans uppercase active:scale-95 w-full mb-6 flex items-center justify-center gap-2 cursor-pointer"
+                  className="px-6 py-2.5 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-full font-medium transition-all text-sm shadow-sm active:scale-95 w-full mb-6 flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <Share2 size={13} />
-                  <span>Invite Friends</span>
+                  <Share2 size={16} />
+                  <span>Invite friends</span>
                 </button>
               </motion.div>
             ) : (
@@ -858,20 +855,20 @@ export default function App() {
                   <ArrowLeft size={16} />
                 </button>
 
-                <h2 className="text-xs font-extrabold text-zinc-400 font-display tracking-widest uppercase mb-1 mt-8">
-                  Create Pseudonym
+                <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-1 mt-8 tracking-tight">
+                  Choose a pseudonym
                 </h2>
-                <p className="text-[10px] text-zinc-505 font-sans tracking-wide mb-6">Choose how peers identify your node on stream</p>
+                <p className="text-sm text-zinc-500 mb-6">How peers identify your node</p>
 
                 {/* Real-time Dynamic Avatar profile preview */}
                 <div className="mb-6 flex flex-col items-center gap-2">
                   <UserAvatar 
                     name={userName.trim() || "?"} 
-                    className="w-20 h-20 text-base font-extrabold shadow-md border-0 ring-4 ring-zinc-900/40"
-                    theme="dark"
+                    className="w-20 h-20 text-xl font-medium shadow-sm border-0 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                    theme={theme}
                   />
-                  <span className="text-[11px] font-bold text-zinc-400 tracking-wide font-sans mt-1">
-                    {userName.trim() ? userName.trim() : "Avatar Preview"}
+                  <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 mt-1">
+                    {userName.trim() ? userName.trim() : "Preview"}
                   </span>
                 </div>
                 
@@ -881,16 +878,16 @@ export default function App() {
                   onChange={(e) => setUserName(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleJoin()}
                   placeholder="Enter your name..."
-                  className="px-5 py-3.5 bg-zinc-900 text-zinc-100 rounded-2xl border border-zinc-850 focus:outline-none focus:ring-1 focus:ring-accent w-full mb-4 font-sans text-sm text-center placeholder-zinc-650 focus:border-accent font-medium text-inherit"
+                  className="px-4 py-3 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 rounded-full border border-zinc-200 dark:border-zinc-800 focus:outline-none focus:ring-2 focus:ring-accent w-full mb-4 font-sans text-base text-center placeholder-zinc-400"
                   autoFocus
                 />
                 
                 <button
                   onClick={handleJoin}
                   disabled={!userName.trim()}
-                  className="px-8 py-3.5 bg-accent text-white rounded-2xl font-bold hover:bg-accent-hover transition-all text-xs tracking-wider font-sans uppercase shadow-md active:scale-95 w-full disabled:opacity-40 disabled:cursor-not-allowed mb-6 cursor-pointer"
+                  className="px-6 py-2.5 bg-accent text-white rounded-full font-medium hover:bg-accent-hover transition-all text-sm shadow-sm active:scale-95 w-full disabled:opacity-40 disabled:cursor-not-allowed mb-6 cursor-pointer"
                 >
-                  Confirm & Join Stream
+                  Join stream
                 </button>
               </motion.div>
             )}
@@ -898,14 +895,16 @@ export default function App() {
 
           {/* Collapsible Relay URL config for GitHub Pages deployment */}
           <div className="w-full text-left">
-            <details className="group border border-zinc-900 rounded-2xl bg-zinc-950/20 px-3 py-2 text-zinc-500 select-none transition-all duration-300">
-              <summary className="list-none flex items-center justify-between text-[11px] font-sans font-semibold tracking-wider cursor-pointer uppercase py-1 group-open:pb-2.5">
-                <span>Relay Configuration</span>
-                <span className="transition-transform group-open:rotate-180 text-[9px]">▼</span>
+            <details className={`group border rounded-2xl px-4 py-3 select-none transition-all duration-300 ${
+              theme === 'dark' ? 'bg-zinc-900/50 border-zinc-800 text-zinc-400' : 'bg-zinc-50 border-zinc-200 text-zinc-600'
+            }`}>
+              <summary className="list-none flex items-center justify-between text-xs font-medium cursor-pointer py-1">
+                <span>Relay configuration</span>
+                <span className="transition-transform group-open:rotate-180 text-[10px]">▼</span>
               </summary>
-              <div className="space-y-2 pt-2 border-t border-zinc-900/60">
-                <div className="flex flex-col gap-1">
-                  <label className="text-[9px] text-zinc-605 font-sans font-semibold tracking-wider uppercase">Relay Server URL</label>
+              <div className="space-y-3 pt-3 border-t border-zinc-200 dark:border-zinc-800 mt-2">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-medium text-zinc-500">Relay server URL</label>
                   <input
                     type="text"
                     value={serverUrl}
@@ -915,12 +914,14 @@ export default function App() {
                       localStorage.setItem('relay_server_url', val);
                     }}
                     placeholder="e.g. http://localhost:3000"
-                    className="px-3 py-2 bg-zinc-900/40 text-zinc-300 rounded-xl border border-zinc-900 focus:outline-none focus:ring-1 focus:ring-accent text-xs placeholder-zinc-700 font-mono"
+                    className={`px-3 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-accent/50 text-xs font-mono w-full ${
+                      theme === 'dark' ? 'bg-zinc-900 border-zinc-700 text-zinc-300 placeholder-zinc-600' : 'bg-white border-zinc-300 text-zinc-900 placeholder-zinc-400'
+                    }`}
                   />
                 </div>
-                <div className="flex items-center justify-between text-[10px]">
-                  <span className="text-zinc-600">Status:</span>
-                  <span className={`font-semibold uppercase tracking-widest text-[9px] ${connectionStatus === 'connected' ? 'text-emerald-500' : 'text-zinc-500 animate-pulse'}`}>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-zinc-500">Status:</span>
+                  <span className={`font-medium ${connectionStatus === 'connected' ? 'text-emerald-500' : 'text-zinc-500 animate-pulse'}`}>
                     ● {connectionStatus}
                   </span>
                 </div>
@@ -1010,24 +1011,24 @@ export default function App() {
           fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-300 ease-in-out
           ${isAsideOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
           md:translate-x-0 md:relative md:z-0 md:w-64 md:flex flex-col
-          ${theme === 'dark' ? 'bg-zinc-950 border-r border-zinc-900' : 'bg-white border-r border-zinc-200'}
-          p-5 space-y-5 flex flex-col h-full
+          bg-zinc-50 dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800
+          p-4 space-y-4 flex flex-col h-full
         `}>
-          <div className="flex items-center justify-between">
-            <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-widest font-display">ONLINE USERS</h2>
-            <button className="md:hidden text-zinc-400 hover:text-zinc-500 font-bold p-1" onClick={() => setIsAsideOpen(false)}>
+          <div className="flex items-center justify-between px-2 pt-2">
+            <h2 className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Online users</h2>
+            <button className="md:hidden text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 font-bold p-1" onClick={() => setIsAsideOpen(false)}>
               <X size={18} />
             </button>
           </div>
 
           <div 
             onClick={() => { setSelectedRecipient("All"); setIsAsideOpen(false); }}
-            className={`cursor-pointer text-sm font-medium flex items-center gap-3 p-2.5 rounded-full transition-colors font-sans ${selectedRecipient === "All" ? 'text-white bg-accent font-bold' : theme === 'dark' ? 'text-zinc-400 hover:bg-zinc-900 hover:text-white' : 'text-zinc-700 hover:bg-zinc-100 hover:text-black'}`}
+            className={`cursor-pointer text-sm font-medium flex items-center gap-3 p-3 rounded-full transition-colors font-sans ${selectedRecipient === "All" ? 'text-accent bg-accent/10 dark:bg-accent/20 font-medium' : theme === 'dark' ? 'text-zinc-400 hover:bg-zinc-800 hover:text-white' : 'text-zinc-700 hover:bg-zinc-200 hover:text-black'}`}
           >
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${selectedRecipient === 'All' ? 'bg-white/20 text-white' : theme === 'dark' ? 'bg-zinc-900 text-zinc-400' : 'bg-zinc-100 text-zinc-600'}`}>
-              👥
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${selectedRecipient === 'All' ? 'bg-accent/20 text-accent' : theme === 'dark' ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-200 text-zinc-600'}`}>
+              <Users size={16} />
             </div>
-            <span>All Users</span>
+            <span>Public Room</span>
           </div>
 
           <div className="flex-1 overflow-y-auto space-y-2 pr-1 scrollbar-thin">
@@ -1041,7 +1042,7 @@ export default function App() {
                 <div 
                   key={user} 
                   onClick={() => { setSelectedRecipient(user); setIsAsideOpen(false); }}
-                  className={`cursor-pointer text-sm font-medium flex items-center gap-3 p-2 rounded-full transition-colors font-sans ${selectedRecipient === user ? 'text-white bg-accent font-semibold' : theme === 'dark' ? 'text-zinc-400 hover:bg-zinc-900 hover:text-white' : 'text-zinc-700 hover:bg-zinc-100 hover:text-black'}`}
+                  className={`cursor-pointer text-sm font-medium flex items-center gap-3 p-2 rounded-full transition-colors font-sans ${selectedRecipient === user ? 'text-accent bg-accent/10 dark:bg-accent/20 font-medium' : theme === 'dark' ? 'text-zinc-400 hover:bg-zinc-800 hover:text-white' : 'text-zinc-700 hover:bg-zinc-200 hover:text-black'}`}
                 >
                   <UserAvatar 
                     name={user} 
@@ -1055,9 +1056,9 @@ export default function App() {
           </div>
 
           {/* Notification & Sound Preferences */}
-          <div className="pt-3 border-t border-zinc-200 dark:border-zinc-900 space-y-2 font-sans text-left">
-            <h3 className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">PREFERENCES</h3>
-            <div className="flex flex-col gap-2">
+          <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-2 font-sans text-left">
+            <h3 className="text-xs font-medium text-zinc-600 dark:text-zinc-400 px-2">Preferences</h3>
+            <div className="flex flex-col gap-1">
               {/* Sound toggle button */}
               <button
                 onClick={() => {
@@ -1066,10 +1067,10 @@ export default function App() {
                   localStorage.setItem('pref_sound', String(newVal));
                   if (newVal) playNotificationSound();
                 }}
-                className={`flex items-center justify-between w-full px-3 py-2 rounded-xl transition-all border text-xs font-semibold cursor-pointer ${
+                className={`flex items-center justify-between w-full px-3 py-2.5 rounded-3xl transition-all text-sm font-medium cursor-pointer ${
                   theme === 'dark' 
-                    ? 'bg-zinc-900/40 hover:bg-zinc-900 text-zinc-300 border-zinc-900' 
-                    : 'bg-zinc-100 hover:bg-zinc-100/80 text-zinc-700 border-zinc-200'
+                    ? 'hover:bg-zinc-800 text-zinc-300' 
+                    : 'hover:bg-zinc-100 text-zinc-700'
                 }`}
                 title="Toggle audio notification sound chimes"
               >
@@ -1085,10 +1086,10 @@ export default function App() {
               {/* Push alert settings */}
               <button
                 onClick={handleDesktopNotificationToggle}
-                className={`flex items-center justify-between w-full px-3 py-2 rounded-xl transition-all border text-xs font-semibold cursor-pointer ${
+                className={`flex items-center justify-between w-full px-3 py-2.5 rounded-3xl transition-all text-sm font-medium cursor-pointer ${
                   theme === 'dark' 
-                    ? 'bg-zinc-900/40 hover:bg-zinc-900 text-zinc-300 border-zinc-900' 
-                    : 'bg-zinc-100 hover:bg-zinc-100/80 text-zinc-700 border-zinc-200'
+                    ? 'hover:bg-zinc-800 text-zinc-300' 
+                    : 'hover:bg-zinc-100 text-zinc-700'
                 }`}
                 title="Toggle native standard desktop push notifications"
               >
@@ -1149,30 +1150,30 @@ export default function App() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -12, scale: 0.98 }}
                   transition={{ duration: 0.25 }}
-                  className="max-w-md w-full mx-auto text-center p-6 border rounded-3xl transition-all shadow-xl bg-white/40 dark:bg-zinc-950/40 backdrop-blur-md border-zinc-200/60 dark:border-zinc-900"
+                  className="max-w-md w-full mx-auto text-center p-6 border rounded-3xl transition-all shadow-sm bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800"
                 >
-                  <div className="relative inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-accent/10 border border-accent/20 text-accent text-2xl mb-4 select-none">
-                    📶
+                  <div className="relative inline-flex items-center justify-center w-14 h-14 rounded-full bg-accent/10 text-accent text-2xl mb-4 select-none">
+                    <Radio size={24} />
                   </div>
 
-                  <h2 className="text-xl font-extrabold tracking-wider font-display uppercase mb-1">
-                    EPHEMERAL RELAY
+                  <h2 className="text-xl font-medium tracking-tight mb-1">
+                    Ephemeral Relay
                   </h2>
-                  <p className="text-xs text-zinc-550 dark:text-zinc-500 font-sans tracking-wide leading-relaxed mb-6">
-                    Connect securely inside clean workspace frequencies. Choose a stream channel or select an online peer from the options below to start chatting.
+                  <p className="text-sm text-zinc-500 tracking-wide leading-relaxed mb-6">
+                    Connect securely inside clean workspace frequencies. Choose a stream channel or select an online peer to start.
                   </p>
 
                   <div className="grid grid-cols-2 gap-2.5 mb-6 text-left">
-                    <div className={`p-3 rounded-2xl border ${theme === 'dark' ? 'bg-zinc-900/40 border-zinc-900/80' : 'bg-zinc-100/60 border-zinc-200/60'}`}>
-                      <span className="text-[9px] uppercase tracking-wider font-bold text-zinc-400 block mb-0.5">Frequency Presence</span>
-                      <span className="text-xs font-bold text-accent font-sans flex items-center gap-1.5">
+                    <div className={`p-3 rounded-2xl border ${theme === 'dark' ? 'bg-zinc-800/40 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}>
+                      <span className="text-[10px] uppercase tracking-wider font-medium text-zinc-500 block mb-0.5">Presence</span>
+                      <span className="text-sm font-medium text-accent flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
                         {onlineUsers.length} Online
                       </span>
                     </div>
-                    <div className={`p-2.5 rounded-2xl border ${theme === 'dark' ? 'bg-zinc-900/40 border-zinc-900/80' : 'bg-zinc-100/60 border-zinc-200/60'}`}>
-                      <span className="text-[9px] uppercase tracking-wider font-bold text-zinc-400 block mb-0.5">Device Stream</span>
-                      <span className={`text-xs font-bold font-sans uppercase tracking-wide flex items-center gap-1.5 ${connectionStatus === 'connected' ? 'text-emerald-500' : 'text-zinc-500'}`}>
+                    <div className={`p-2.5 rounded-2xl border ${theme === 'dark' ? 'bg-zinc-800/40 border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}>
+                      <span className="text-[10px] uppercase tracking-wider font-medium text-zinc-500 block mb-0.5">Stream</span>
+                      <span className={`text-sm font-medium tracking-wide flex items-center gap-1.5 ${connectionStatus === 'connected' ? 'text-emerald-500' : 'text-zinc-500'}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${connectionStatus === 'connected' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`}></span>
                         {connectionStatus}
                       </span>
@@ -1240,26 +1241,26 @@ export default function App() {
                   {/* Inline header inside chat container */}
                   <div className={`p-4 rounded-3xl border flex items-center justify-between mb-4 shadow-sm transition-all ${
                     theme === 'dark' 
-                      ? 'bg-zinc-950/40 border-zinc-900/60 text-zinc-305' 
-                      : 'bg-zinc-50/50 border-zinc-200 text-zinc-805'
+                      ? 'bg-zinc-900 border-zinc-800 text-zinc-300' 
+                      : 'bg-white border-zinc-200 text-zinc-800'
                   }`}>
                     <div className="flex items-center gap-2.5 min-w-0">
                       {selectedRecipient === 'All' ? (
                         <>
-                          <div className="w-8 h-8 rounded-full bg-accent/10 text-accent flex items-center justify-center text-sm font-bold shadow-inner">
-                            🌐
+                          <div className="w-9 h-9 rounded-full bg-accent/10 text-accent flex items-center justify-center text-sm font-medium shadow-sm">
+                            <Radio size={16} />
                           </div>
                           <div className="min-w-0">
-                            <h2 className="text-xs sm:text-sm font-extrabold tracking-wide uppercase font-display">Public Room Stream</h2>
-                            <p className="text-[9px] text-zinc-500 font-sans tracking-tight truncate">Frequency active with {onlineUsers.length} peers</p>
+                            <h2 className="text-sm font-medium tracking-tight">Public Room</h2>
+                            <p className="text-xs text-zinc-500 tracking-tight truncate">{onlineUsers.length} active peers</p>
                           </div>
                         </>
                       ) : (
                         <>
-                          <UserAvatar name={selectedRecipient} className="w-8 h-8 text-[9px] font-bold" theme={theme} />
+                          <UserAvatar name={selectedRecipient} className="w-9 h-9 text-xs font-medium" theme={theme} />
                           <div className="min-w-0">
-                            <h2 className="text-xs sm:text-sm font-extrabold tracking-wide font-display truncate">🔒 {selectedRecipient}</h2>
-                            <p className="text-[9px] text-zinc-500 font-sans tracking-tight">Direct Node-to-Node Connection</p>
+                            <h2 className="text-sm font-medium tracking-tight truncate">{selectedRecipient}</h2>
+                            <p className="text-xs text-zinc-500 tracking-tight">Direct Connection</p>
                           </div>
                         </>
                       )}
@@ -1267,13 +1268,13 @@ export default function App() {
                     
                     <button
                       onClick={() => setSelectedRecipient("")}
-                      className={`px-3 py-1.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider transition-all scale-100 hover:scale-[1.02] active:scale-95 cursor-pointer border ${
+                      className={`px-4 py-2 rounded-full text-xs font-medium transition-all active:scale-95 cursor-pointer border ${
                         theme === 'dark'
-                          ? 'bg-zinc-900 hover:bg-zinc-850 text-zinc-400 border-zinc-850 hover:text-white'
-                          : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-650 border-zinc-200 hover:text-black'
+                          ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border-zinc-700 hover:text-white'
+                          : 'bg-zinc-50 hover:bg-zinc-100 text-zinc-700 border-zinc-200 hover:text-black'
                       }`}
                     >
-                      Quit Stream
+                      Close chat
                     </button>
                   </div>
                   {displayedMessages.length === 0 ? (
@@ -1292,10 +1293,10 @@ export default function App() {
                             animate={{ opacity: 1, scale: 1 }}
                             className="flex justify-center my-3 w-full"
                           >
-                            <span className={`px-3.5 py-1.5 text-[9px] sm:text-xxs font-bold uppercase tracking-widest rounded-full border shadow-sm ${
+                            <span className={`px-3 py-1 text-[10px] sm:text-xs font-medium rounded-full ${
                               theme === 'dark'
-                                ? 'bg-zinc-900/35 border-zinc-900 text-zinc-400'
-                                : 'bg-zinc-100 border-zinc-200 text-zinc-500'
+                                ? 'bg-zinc-800 text-zinc-400'
+                                : 'bg-zinc-100 text-zinc-600'
                             }`}>
                               {msg.text}
                             </span>
@@ -1369,14 +1370,14 @@ export default function App() {
 
       {/* Footer / Input Controller */}
       {selectedRecipient && (
-        <footer className={`px-2.5 py-2 sm:p-6 ${theme === 'dark' ? 'bg-zinc-950/60 backdrop-blur-md border-t border-zinc-900' : 'bg-white/85 backdrop-blur-md border-t border-zinc-200'} safe-bottom z-10`}>
+        <footer className={`px-2.5 py-2 sm:p-5 ${theme === 'dark' ? 'bg-zinc-950 border-t border-zinc-800' : 'bg-white border-t border-zinc-200'} safe-bottom z-10`}>
           <div className="max-w-4xl mx-auto flex items-center gap-2 sm:gap-3">
             {/* Outlined M3 container for text inputs and actions */}
-            <div className={`flex-1 flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-4 sm:py-2 rounded-2xl border ${
+            <div className={`flex-1 flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-4 sm:py-2 rounded-full border ${
               theme === 'dark' 
-                ? 'bg-zinc-900/40 border-zinc-800 focus-within:border-accent' 
-                : 'bg-zinc-100/40 border-zinc-200 focus-within:border-accent'
-            } transition-all duration-200 min-w-0`}>
+                ? 'bg-zinc-900 border-zinc-800' 
+                : 'bg-zinc-50 border-zinc-200'
+            } transition-all duration-200 min-w-0 shadow-sm focus-within:ring-2 focus-within:ring-accent/50 focus-within:border-accent`}>
               
               <input
                 type="file"
@@ -1406,9 +1407,9 @@ export default function App() {
               )}
 
               {isRecording ? (
-                <div className="flex-1 flex items-center gap-1.5 text-[11px] text-accent font-semibold tracking-wider uppercase animate-pulse py-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
-                  <span>Recording Voice Note...</span>
+                <div className="flex-1 flex items-center gap-1.5 text-sm md:text-sm text-accent font-medium animate-pulse py-1">
+                  <span className="w-2 h-2 rounded-full bg-accent"></span>
+                  <span>Recording audio...</span>
                 </div>
               ) : (
                 <input
@@ -1450,46 +1451,46 @@ export default function App() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 15, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className={`absolute right-4 bottom-20 w-72 rounded-2xl shadow-2xl border p-4 z-50 text-left ${
+                className={`absolute right-4 bottom-20 w-72 rounded-3xl shadow-lg border p-4 z-50 text-left ${
                   theme === 'dark' 
-                    ? 'bg-zinc-950/98 border-zinc-800 text-zinc-100 shadow-black/55 backdrop-blur-md' 
-                    : 'bg-white/98 border-zinc-200 text-zinc-900 shadow-zinc-200/55 backdrop-blur-md'
+                    ? 'bg-zinc-900 border-zinc-800 text-zinc-100' 
+                    : 'bg-white border-zinc-200 text-zinc-900'
                 }`}
               >
                 <div className="space-y-4">
                   {/* Connected User Profile Badge */}
-                  <div className="flex items-center gap-2.5 pb-3 border-b border-zinc-250 dark:border-zinc-850">
+                  <div className="flex items-center gap-3 pb-3 border-b border-zinc-200 dark:border-zinc-800">
                     <UserAvatar 
                       name={userName} 
-                      className="w-9 h-9 text-xs font-bold" 
+                      className="w-10 h-10 text-sm font-medium" 
                       theme={theme}
                     />
                     <div className="min-w-0">
-                      <span className="text-[9px] text-zinc-500 font-bold tracking-widest uppercase block mb-0.5">Connected Node</span>
-                      <h4 className="text-xs font-bold tracking-tight truncate">{userName}</h4>
+                      <h4 className="text-sm font-medium truncate">{userName}</h4>
+                      <span className="text-xs text-zinc-500 block">Connected</span>
                     </div>
                   </div>
 
                   {/* Settings toggles */}
-                  <div className="space-y-2 text-xs">
-                    <span className="text-[9px] text-zinc-400 dark:text-zinc-550 font-bold uppercase tracking-widest block mb-1">
-                      Stream Preferences
+                  <div className="space-y-1">
+                    <span className="text-xs text-zinc-600 dark:text-zinc-400 font-medium block mb-2 px-1">
+                      Preferences
                     </span>
 
                     {/* Theme Toggle */}
                     <button 
                       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all border font-semibold text-xs cursor-pointer ${
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-3xl transition-all text-sm cursor-pointer ${
                         theme === 'dark' 
-                          ? 'bg-zinc-900/40 hover:bg-zinc-900 text-zinc-300 border-zinc-900' 
-                          : 'bg-zinc-100 hover:bg-zinc-200/50 text-zinc-750 border-zinc-200'
+                          ? 'hover:bg-zinc-800 text-zinc-300' 
+                          : 'hover:bg-zinc-100 text-zinc-700'
                       }`}
                     >
-                      <div className="flex items-center gap-2">
-                        {theme === 'dark' ? <Sun size={14} className="text-amber-500" /> : <Moon size={14} className="text-zinc-650" />}
-                        <span>Midnight Theme</span>
+                      <div className="flex items-center gap-3">
+                        {theme === 'dark' ? <Moon size={16} className="text-accent" /> : <Sun size={16} className="text-accent" />}
+                        <span>Dark mode</span>
                       </div>
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-accent">
+                      <span className="text-xs font-medium text-accent">
                         {theme === 'dark' ? 'ON' : 'OFF'}
                       </span>
                     </button>
@@ -1502,17 +1503,17 @@ export default function App() {
                         localStorage.setItem('pref_sound', String(newVal));
                         if (newVal) playNotificationSound();
                       }}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all border font-semibold text-xs cursor-pointer ${
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-3xl transition-all text-sm cursor-pointer ${
                         theme === 'dark' 
-                          ? 'bg-zinc-900/40 hover:bg-zinc-900 text-zinc-300 border-zinc-900' 
-                          : 'bg-zinc-100 hover:bg-zinc-200/50 text-zinc-750 border-zinc-200'
+                          ? 'hover:bg-zinc-800 text-zinc-300' 
+                          : 'hover:bg-zinc-100 text-zinc-700'
                       }`}
                     >
-                      <div className="flex items-center gap-2">
-                        {soundEnabled ? <Volume2 size={14} className="text-emerald-500" /> : <VolumeX size={14} className="text-zinc-400" />}
-                        <span>Audio Chimes</span>
+                      <div className="flex items-center gap-3">
+                        {soundEnabled ? <Volume2 size={16} className="text-emerald-500" /> : <VolumeX size={16} className="text-zinc-400" />}
+                        <span>Alert sounds</span>
                       </div>
-                      <span className={`text-[9px] font-bold uppercase tracking-wider ${soundEnabled ? 'text-emerald-500' : 'text-zinc-450'}`}>
+                      <span className={`text-xs font-medium ${soundEnabled ? 'text-emerald-500' : 'text-zinc-500'}`}>
                         {soundEnabled ? 'ON' : 'OFF'}
                       </span>
                     </button>
@@ -1520,22 +1521,22 @@ export default function App() {
                     {/* Push Notifications */}
                     <button
                       onClick={handleDesktopNotificationToggle}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all border font-semibold text-xs cursor-pointer ${
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-3xl transition-all text-sm cursor-pointer ${
                         theme === 'dark' 
-                          ? 'bg-zinc-900/40 hover:bg-zinc-900 text-zinc-305 border-zinc-900' 
-                          : 'bg-zinc-100 hover:bg-zinc-200/50 text-zinc-755 border-zinc-200'
+                          ? 'hover:bg-zinc-800 text-zinc-300' 
+                          : 'hover:bg-zinc-100 text-zinc-700'
                       }`}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         {desktopNotificationEnabled && notificationPermissionStatus === 'granted' ? (
-                          <Bell size={14} className="text-amber-500" />
+                          <Bell size={16} className="text-emerald-500" />
                         ) : (
-                          <BellOff size={14} className="text-zinc-400" />
+                          <BellOff size={16} className="text-zinc-400" />
                         )}
-                        <span>Push Alerts</span>
+                        <span>Desktop notifications</span>
                       </div>
-                      <span className={`text-[9px] font-bold uppercase tracking-wider ${
-                        desktopNotificationEnabled && notificationPermissionStatus === 'granted' ? 'text-amber-505' : 'text-zinc-400'
+                      <span className={`text-xs font-medium ${
+                        desktopNotificationEnabled && notificationPermissionStatus === 'granted' ? 'text-emerald-500' : 'text-zinc-500'
                       }`}>
                         {desktopNotificationEnabled && notificationPermissionStatus === 'granted' ? 'ON' : 'OFF'}
                       </span>
@@ -1543,13 +1544,13 @@ export default function App() {
                   </div>
 
                   {/* Logout block */}
-                  <div className="pt-3 border-t border-zinc-200 dark:border-zinc-850">
+                  <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800">
                     <button 
                       onClick={handleLogout}
-                      className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-rose-500 hover:bg-rose-550/10 transition-colors font-bold text-xs uppercase tracking-wider cursor-pointer border border-transparent"
+                      className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-3xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors text-sm font-medium cursor-pointer"
                     >
-                      <LogOut size={14} />
-                      <span>Disconnect Stream</span>
+                      <LogOut size={16} />
+                      <span>Disconnect</span>
                     </button>
                   </div>
                 </div>
@@ -1558,21 +1559,19 @@ export default function App() {
           )}
         </AnimatePresence>
 
-        <nav className={`py-2 px-3 rounded-2xl border transition-all w-full flex items-center shadow-lg ${
+        <nav className={`py-1.5 px-2 rounded-full border transition-all w-full flex items-center shadow-md ${
           theme === 'dark' 
-            ? 'bg-zinc-900/90 border-zinc-800/80 text-zinc-300 backdrop-blur-md shadow-black/35' 
-            : 'bg-white/95 border-zinc-200 text-zinc-700 backdrop-blur-md shadow-zinc-150/45'
+            ? 'bg-zinc-900 border-zinc-800 text-zinc-300' 
+            : 'bg-white border-zinc-200 text-zinc-700'
         }`}>
           <div className="flex items-center justify-around w-full gap-1">
             {/* 1. Peers Selector */}
             <button
               onClick={() => setIsAsideOpen(!isAsideOpen)}
-              className={`p-3 rounded-xl transition-all active:scale-95 cursor-pointer relative ${
+              className={`p-3 rounded-full transition-all active:scale-95 cursor-pointer relative ${
                 isAsideOpen 
-                  ? 'bg-accent text-white shadow-sm scale-105' 
-                  : theme === 'dark'
-                    ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/80'
-                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                  ? 'bg-accent/15 text-accent shadow-sm' 
+                  : 'hover:bg-zinc-100 dark:hover:bg-zinc-800'
               }`}
               title="Toggle peers list"
             >
@@ -1588,12 +1587,10 @@ export default function App() {
                 setSelectedRecipient("All");
                 setIsAsideOpen(false);
               }}
-              className={`p-3 rounded-xl transition-all active:scale-95 cursor-pointer ${
+              className={`p-3 rounded-full transition-all active:scale-95 cursor-pointer ${
                 selectedRecipient === "All" && !isAsideOpen
-                  ? 'bg-accent text-white shadow-sm scale-105'
-                  : theme === 'dark'
-                    ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/80'
-                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                  ? 'bg-accent text-white shadow-sm'
+                  : 'hover:bg-zinc-100 dark:hover:bg-zinc-800'
               }`}
               title="Public stream room"
             >
@@ -1605,11 +1602,7 @@ export default function App() {
               onClick={() => {
                 setShowInviteModal(true);
               }}
-              className={`p-3 rounded-xl transition-all active:scale-95 cursor-pointer ${
-                theme === 'dark'
-                  ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/80'
-                  : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
-              }`}
+              className="p-3 rounded-full transition-all active:scale-95 cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800"
               title="Invite peers to stream"
             >
               <Share2 size={20} />
@@ -1618,12 +1611,10 @@ export default function App() {
             {/* 4. More Options Trigger */}
             <button
               onClick={() => setIsNavMenuOpen(!isNavMenuOpen)}
-              className={`p-3 rounded-xl transition-all active:scale-95 cursor-pointer ${
+              className={`p-3 rounded-full transition-all active:scale-95 cursor-pointer ${
                 isNavMenuOpen
-                  ? 'bg-accent text-white shadow-sm scale-105'
-                  : theme === 'dark'
-                    ? 'text-zinc-450 hover:text-white hover:bg-zinc-800/80'
-                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                  ? 'bg-accent/15 text-accent shadow-sm'
+                  : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
               }`}
               title="Settings & More Options"
             >

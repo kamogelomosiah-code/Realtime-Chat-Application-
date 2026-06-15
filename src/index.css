@@ -1,11 +1,40 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Roboto", ui-sans-serif, system-ui, sans-serif;
 
-  --color-accent: #FF3B30;
-  --color-accent-hover: #E03025;
+  /* Google Blue Accent */
+  --color-accent: #0b57d0;
+  --color-accent-hover: #0842a0;
+
+  /* Map Zinc to Material Grays/Surfaces */
+  --color-zinc-50: #f8fafd;
+  --color-zinc-100: #f0f4f8;
+  --color-zinc-200: #e1e3e1;
+  --color-zinc-300: #c4c7c5;
+  --color-zinc-400: #8e918f;
+  --color-zinc-500: #444746;
+  --color-zinc-600: #1f1f1f;
+  --color-zinc-800: #282a2c;
+  --color-zinc-900: #1e1f20;
+  --color-zinc-950: #131314;
+}
+
+/* Material 3 Base Resets */
+body {
+  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Force standard material rounding on components */
+.rounded-2xl {
+  border-radius: 1.5rem !important;
+}
+
+/* Google-specific input resets */
+input {
+  font-family: inherit;
 }
 
