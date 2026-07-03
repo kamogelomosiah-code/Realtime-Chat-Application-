@@ -59,9 +59,18 @@ interface UserAvatarProps {
   name: string;
   className?: string;
   theme?: 'light' | 'dark';
+  displayPicture?: string | null;
 }
 
-function UserAvatar({ name, className = "w-8 h-8", theme = "dark" }: UserAvatarProps) {
+function UserAvatar({ name, className = "w-8 h-8", theme = "dark", displayPicture }: UserAvatarProps) {
+  if (displayPicture) {
+    return (
+      <div className={`relative flex items-center justify-center shrink-0 overflow-hidden ${className} bg-zinc-900 border border-zinc-800`}>
+        <img src={displayPicture} alt={name} className="w-full h-full object-cover" />
+      </div>
+    );
+  }
+
   const hash = hashCode(name || "User");
   const initials = (name || "U").substring(0, 2).toUpperCase();
 
@@ -187,6 +196,12 @@ function UserAvatar({ name, className = "w-8 h-8", theme = "dark" }: UserAvatarP
   );
 }
 
+interface UserProfile {
+  username: string;
+  displayPicture: string | null;
+  ip?: string;
+}
+
 export default function App() {
   const [serverUrl, setServerUrl] = useState<string>(() => {
     const stored = localStorage.getItem('relay_server_url');
@@ -197,9 +212,18 @@ export default function App() {
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('disconnected');
 
   const [messages, setMessages] = useState<Message[]>([]);
-  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+  const [onlineUsers, setOnlineUsers] = useState<UserProfile[]>([]);
+  const [friends, setFriends] = useState<string[]>(() => {
+    const stored = localStorage.getItem('friends');
+    return stored ? JSON.parse(stored) : [];
+  });
+  const [displayPicture, setDisplayPicture] = useState<string | null>(() => {
+    return localStorage.getItem('display_picture') || null;
+  });
   const [input, setInput] = useState('');
-  const [userName, setUserName] = useState('');
+  const [userName, setUserName] = useState(() => {
+    return localStorage.getItem('locked_username') || '';
+  });
   const [joined, setJoined] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [selectedRecipient, setSelectedRecipient] = useState<string>("");
@@ -307,9 +331,7 @@ export default function App() {
         const currentUserName = userNameRef.current;
 
         // Check if user is currently viewing the conversation room this message belongs to
-        const isCurrentlyInConversation = 
-          (activeRecipient === 'All' && msg.recipient === 'All') || 
-          (activeRecipient === msg.sender && msg.recipient === currentUserName);
+        const isCurrentlyInConversation = (activeRecipient === msg.sender && msg.recipient === currentUserName);
 
         // 1. Play harmonic warm chime sound
         if (soundEnabledRef.current) {
@@ -323,7 +345,7 @@ export default function App() {
           ('Notification' in window)
         ) {
           try {
-            const title = `${msg.sender} (${msg.recipient === 'All' ? 'All Users' : 'Direct Message'})`;
+            const title = `${msg.sender} (Direct Message)`;
             const textBody = msg.text || (msg.image ? '📷 Shared an image' : msg.audio ? '🎙️ Sent a voice note' : 'New message');
             const n = new Notification(title, {
               body: textBody,
@@ -332,11 +354,7 @@ export default function App() {
             });
             n.onclick = () => {
               window.focus();
-              if (msg.recipient === 'All') {
-                setSelectedRecipient('All');
-              } else {
-                setSelectedRecipient(msg.sender);
-              }
+              setSelectedRecipient(msg.sender);
               n.close();
             };
           } catch (err) {
@@ -362,7 +380,7 @@ export default function App() {
         }
       }
     };
-    const handleUserList = (users: string[]) => {
+    const handleUserList = (users: UserProfile[]) => {
       setOnlineUsers(users);
     };
     const handleJoinError = (err: string) => {
@@ -379,25 +397,14 @@ export default function App() {
           {
             id: toastId,
             sender: "System",
-            text: `📶 ${username} has joined the stream`,
-            recipient: "All",
+            text: `📶 ${username} has joined the network`,
+            recipient: userNameRef.current,
             avatarName: username
           }
         ]);
         setTimeout(() => {
           setToasts((prev) => prev.filter(t => t.id !== toastId));
         }, 5000);
-
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: `sys-join-${username}-${Date.now()}`,
-            text: `📶 ${username} has connected to the frequency`,
-            sender: 'System',
-            recipient: 'All',
-            timestamp: Date.now()
-          }
-        ]);
       }
     };
     const handleUserLeft = (username: string) => {
@@ -408,25 +415,14 @@ export default function App() {
           {
             id: toastId,
             sender: "System",
-            text: `🔌 ${username} left the stream`,
-            recipient: "All",
+            text: `🔌 ${username} left the network`,
+            recipient: userNameRef.current,
             avatarName: username
           }
         ]);
         setTimeout(() => {
           setToasts((prev) => prev.filter(t => t.id !== toastId));
         }, 5000);
-
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: `sys-left-${username}-${Date.now()}`,
-            text: `🔌 ${username} left the frequency`,
-            sender: 'System',
-            recipient: 'All',
-            timestamp: Date.now()
-          }
-        ]);
       }
     };
 
@@ -447,8 +443,16 @@ export default function App() {
 
   const handleJoin = () => {
     if (!userName.trim() || !socket) return;
-    socket.once('join_success', () => {
+    socket.once('join_success', (data?: { username: string, displayPicture?: string | null }) => {
       setJoined(true);
+      if (data && data.username) {
+        setUserName(data.username);
+        localStorage.setItem('locked_username', data.username);
+      }
+      if (data && data.displayPicture) {
+        setDisplayPicture(data.displayPicture);
+        localStorage.setItem('display_picture', data.displayPicture);
+      }
       // Auto-request notification permission on Chrome / modern browsers upon successful stream join
       if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission().then((res) => {
@@ -467,7 +471,8 @@ export default function App() {
       }
     });
     socket.once('join_error', (err) => { alert(err); });
-    socket.emit('join', userName);
+    localStorage.setItem('locked_username', userName);
+    socket.emit('join', { username: userName, displayPicture });
   };
 
   const handleLogout = () => {
@@ -804,11 +809,11 @@ export default function App() {
                       <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
                         {onlineUsers.map((user) => (
                           <div 
-                            key={user}
-                            className="flex items-center gap-1 bg-zinc-950/80 border border-zinc-900/60 px-2.5 py-1 rounded-full text-[11px] text-zinc-300 max-w-full"
+                            key={user.username}
+                            className={`flex items-center gap-1 border border-zinc-200 dark:border-zinc-800 px-2.5 py-1 rounded-full text-[11px] max-w-full ${theme === 'dark' ? 'bg-zinc-900/60 text-zinc-300' : 'bg-white text-zinc-700'}`}
                           >
-                            <UserAvatar name={user} className="w-4 h-4 text-[7px]" theme="dark" />
-                            <span className="truncate max-w-[80px] font-sans font-medium">{user}</span>
+                            <UserAvatar name={user.username} displayPicture={user.displayPicture} className="w-4 h-4 text-[7px]" theme={theme} />
+                            <span className="truncate max-w-[80px] font-sans font-medium">{user.username}</span>
                           </div>
                         ))}
                       </div>
@@ -861,12 +866,38 @@ export default function App() {
                 <p className="text-sm text-zinc-500 mb-6">How peers identify your node</p>
 
                 {/* Real-time Dynamic Avatar profile preview */}
-                <div className="mb-6 flex flex-col items-center gap-2">
-                  <UserAvatar 
-                    name={userName.trim() || "?"} 
-                    className="w-20 h-20 text-xl font-medium shadow-sm border-0 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
-                    theme={theme}
-                  />
+                <div className="mb-6 flex flex-col items-center gap-2 relative group cursor-pointer">
+                  <label className="cursor-pointer relative rounded-full overflow-hidden block">
+                    <UserAvatar 
+                      name={userName.trim() || "?"} 
+                      className="w-20 h-20 text-xl font-medium shadow-sm border-0 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 transition-transform group-hover:scale-105"
+                      theme={theme}
+                      displayPicture={displayPicture}
+                    />
+                    <div className="absolute inset-0 bg-black/50 hidden group-hover:flex items-center justify-center">
+                       <span className="text-white text-[10px] font-medium uppercase tracking-wider">Change</span>
+                    </div>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden" 
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            const result = reader.result as string;
+                            setDisplayPicture(result);
+                            localStorage.setItem('display_picture', result);
+                            if (socket && joined) {
+                              socket.emit('update_profile', { displayPicture: result });
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
                   <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 mt-1">
                     {userName.trim() ? userName.trim() : "Preview"}
                   </span>
@@ -938,9 +969,6 @@ export default function App() {
   }
 
   const displayedMessages = messages.filter((msg) => {
-    if (selectedRecipient === "All") {
-      return msg.recipient === "All";
-    }
     return (
       (msg.sender === userName && msg.recipient === selectedRecipient) ||
       (msg.sender === selectedRecipient && msg.recipient === userName)
@@ -964,9 +992,7 @@ export default function App() {
                   : 'bg-white/95 text-zinc-900 border-zinc-200'
               }`}
               onClick={() => {
-                if (toast.recipient === 'All') {
-                  setSelectedRecipient('All');
-                } else {
+                if (toast.sender !== 'System') {
                   setSelectedRecipient(toast.sender);
                 }
                 setToasts((prev) => prev.filter((t) => t.id !== toast.id));
@@ -1021,35 +1047,65 @@ export default function App() {
             </button>
           </div>
 
-          <div 
-            onClick={() => { setSelectedRecipient("All"); setIsAsideOpen(false); }}
-            className={`cursor-pointer text-sm font-medium flex items-center gap-3 p-3 rounded-full transition-colors font-sans ${selectedRecipient === "All" ? 'text-accent bg-accent/10 dark:bg-accent/20 font-medium' : theme === 'dark' ? 'text-zinc-400 hover:bg-zinc-800 hover:text-white' : 'text-zinc-700 hover:bg-zinc-200 hover:text-black'}`}
-          >
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${selectedRecipient === 'All' ? 'bg-accent/20 text-accent' : theme === 'dark' ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-200 text-zinc-600'}`}>
-              <Users size={16} />
-            </div>
-            <span>Public Room</span>
-          </div>
-
           <div className="flex-1 overflow-y-auto space-y-2 pr-1 scrollbar-thin">
-            {onlineUsers.filter(u => u !== userName).length === 0 ? (
+            {onlineUsers.filter(u => u.username !== userName).length === 0 ? (
               <div className="flex flex-col items-center justify-center p-4 h-32 text-center">
                 <p className="text-xs text-zinc-550 dark:text-zinc-500 font-sans">Wait mode</p>
                 <p className="text-[10px] text-zinc-600 dark:text-zinc-600 mt-1">Waiting for other peers to align to this channel...</p>
               </div>
             ) : (
-              onlineUsers.filter(u => u !== userName).map((user) => (
+              onlineUsers.filter(u => u.username !== userName)
+                .sort((a, b) => {
+                  const aFriend = friends.includes(a.username);
+                  const bFriend = friends.includes(b.username);
+                  if (aFriend && !bFriend) return -1;
+                  if (!aFriend && bFriend) return 1;
+                  return a.username.localeCompare(b.username);
+                })
+                .map((user) => (
                 <div 
-                  key={user} 
-                  onClick={() => { setSelectedRecipient(user); setIsAsideOpen(false); }}
-                  className={`cursor-pointer text-sm font-medium flex items-center gap-3 p-2 rounded-full transition-colors font-sans ${selectedRecipient === user ? 'text-accent bg-accent/10 dark:bg-accent/20 font-medium' : theme === 'dark' ? 'text-zinc-400 hover:bg-zinc-800 hover:text-white' : 'text-zinc-700 hover:bg-zinc-200 hover:text-black'}`}
+                  key={user.username} 
+                  className={`group flex items-center justify-between p-2 rounded-full transition-colors font-sans ${selectedRecipient === user.username ? 'bg-accent/10 dark:bg-accent/20' : theme === 'dark' ? 'hover:bg-zinc-800' : 'hover:bg-zinc-200'}`}
                 >
-                  <UserAvatar 
-                    name={user} 
-                    className="w-8 h-8 text-[11px] font-bold" 
-                    theme={theme}
-                  />
-                  <span className="truncate">{user}</span>
+                  <div 
+                    onClick={() => { setSelectedRecipient(user.username); setIsAsideOpen(false); }}
+                    className="flex-1 cursor-pointer flex items-center gap-3 min-w-0"
+                  >
+                    <UserAvatar 
+                      name={user.username} 
+                      displayPicture={user.displayPicture}
+                      className="w-8 h-8 text-[11px] font-bold" 
+                      theme={theme}
+                    />
+                    <span className={`text-sm tracking-tight truncate ${selectedRecipient === user.username ? 'text-accent font-medium' : theme === 'dark' ? 'text-zinc-300 group-hover:text-white' : 'text-zinc-700 group-hover:text-black'}`}>
+                      {user.username}
+                    </span>
+                  </div>
+                  
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const isFriend = friends.includes(user.username);
+                      let newFriends;
+                      if (isFriend) {
+                        newFriends = friends.filter(f => f !== user.username);
+                      } else {
+                        newFriends = [...friends, user.username];
+                      }
+                      setFriends(newFriends);
+                      localStorage.setItem('friends', JSON.stringify(newFriends));
+                    }}
+                    className={`ml-2 p-1.5 rounded-full transition-all active:scale-95 cursor-pointer ${
+                      friends.includes(user.username) 
+                        ? 'text-amber-400 opacity-100 hover:bg-amber-400/10' 
+                        : 'text-zinc-400 dark:text-zinc-500 opacity-0 group-hover:opacity-100 hover:text-zinc-600 dark:hover:text-zinc-300'
+                    }`}
+                    title={friends.includes(user.username) ? "Remove friend" : "Add friend"}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill={friends.includes(user.username) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                  </button>
                 </div>
               ))
             )}
@@ -1181,39 +1237,21 @@ export default function App() {
                   </div>
 
                   <div className="space-y-2 mb-1 text-left">
-                    <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider block mb-1">Select Channel Stream</span>
+                    <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider block mb-1">Select Peer Stream</span>
 
-                    <button
-                      onClick={() => setSelectedRecipient("All")}
-                      className={`w-full flex items-center justify-between p-3 rounded-2xl border transition-all hover:bg-zinc-100 dark:hover:bg-zinc-900 active:scale-98 cursor-pointer ${
-                        theme === 'dark' ? 'bg-zinc-950 border-zinc-900/80' : 'bg-white border-zinc-200'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-xl bg-accent/15 flex items-center justify-center text-accent">
-                          👥
-                        </div>
-                        <div className="text-left">
-                          <span className="text-xs font-bold font-sans block">Public Room (All)</span>
-                          <span className="text-[9px] text-zinc-505 font-medium">Broadcast to all online users</span>
-                        </div>
-                      </div>
-                      <ChevronRight size={13} className="text-zinc-400" />
-                    </button>
-
-                    {onlineUsers.filter(u => u !== userName).length > 0 ? (
+                    {onlineUsers.filter(u => u.username !== userName).length > 0 ? (
                       <div className="max-h-32 overflow-y-auto space-y-1.5 pr-0.5 scrollbar-thin pt-1">
-                        {onlineUsers.filter(u => u !== userName).map((user) => (
+                        {onlineUsers.filter(u => u.username !== userName).map((user) => (
                           <button
-                            key={user}
-                            onClick={() => setSelectedRecipient(user)}
+                            key={user.username}
+                            onClick={() => setSelectedRecipient(user.username)}
                             className={`w-full flex items-center justify-between p-2 rounded-xl border transition-all hover:bg-zinc-100 dark:hover:bg-zinc-900 active:scale-98 cursor-pointer ${
                               theme === 'dark' ? 'bg-zinc-950/65 border-zinc-900/40' : 'bg-white border-zinc-200/80'
                             }`}
                           >
                             <div className="flex items-center gap-2">
-                              <UserAvatar name={user} className="w-6 h-6 text-[8px]" theme={theme} />
-                              <span className="text-xs font-semibold">{user}</span>
+                              <UserAvatar name={user.username} displayPicture={user.displayPicture} className="w-6 h-6 text-[8px]" theme={theme} />
+                              <span className="text-xs font-semibold">{user.username}</span>
                             </div>
                             <span className="text-[10px] text-accent font-bold uppercase tracking-wider flex items-center gap-1">
                               Chat <ChevronRight size={11} />
@@ -1245,25 +1283,11 @@ export default function App() {
                       : 'bg-white border-zinc-200 text-zinc-800'
                   }`}>
                     <div className="flex items-center gap-2.5 min-w-0">
-                      {selectedRecipient === 'All' ? (
-                        <>
-                          <div className="w-9 h-9 rounded-full bg-accent/10 text-accent flex items-center justify-center text-sm font-medium shadow-sm">
-                            <Radio size={16} />
-                          </div>
-                          <div className="min-w-0">
-                            <h2 className="text-sm font-medium tracking-tight">Public Room</h2>
-                            <p className="text-xs text-zinc-500 tracking-tight truncate">{onlineUsers.length} active peers</p>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <UserAvatar name={selectedRecipient} className="w-9 h-9 text-xs font-medium" theme={theme} />
-                          <div className="min-w-0">
-                            <h2 className="text-sm font-medium tracking-tight truncate">{selectedRecipient}</h2>
-                            <p className="text-xs text-zinc-500 tracking-tight">Direct Connection</p>
-                          </div>
-                        </>
-                      )}
+                      <UserAvatar name={selectedRecipient} displayPicture={onlineUsers.find(u => u.username === selectedRecipient)?.displayPicture} className="w-9 h-9 text-xs font-medium" theme={theme} />
+                      <div className="min-w-0">
+                        <h2 className="text-sm font-medium tracking-tight truncate">{selectedRecipient}</h2>
+                        <p className="text-xs text-zinc-500 tracking-tight">Direct Connection</p>
+                      </div>
                     </div>
                     
                     <button
@@ -1280,7 +1304,7 @@ export default function App() {
                   {displayedMessages.length === 0 ? (
                     <div className="h-[40vh] flex flex-col items-center justify-center text-center p-6 text-zinc-550">
                       <span className="text-2xl mb-2 opacity-50">✉️</span>
-                      <p className="text-xs sm:text-sm font-sans font-medium text-zinc-400 dark:text-zinc-500">No messages yet with {selectedRecipient === 'All' ? 'everyone' : selectedRecipient}.</p>
+                      <p className="text-xs sm:text-sm font-sans font-medium text-zinc-400 dark:text-zinc-500">No messages yet with {selectedRecipient}.</p>
                       <p className="text-[11px] text-zinc-500 dark:text-zinc-600 mt-1 max-w-[240px] leading-relaxed">Start the conversation by sending a direct message.</p>
                     </div>
                   ) : (
@@ -1321,6 +1345,7 @@ export default function App() {
                           >
                             <UserAvatar 
                               name={msg.sender} 
+                              displayPicture={msg.sender === userName ? displayPicture : onlineUsers.find(u => u.username === msg.sender)?.displayPicture}
                               className="w-7 h-7 sm:w-8 sm:h-8 text-[10px] sm:text-xs font-bold" 
                               theme={theme}
                             />
@@ -1579,22 +1604,6 @@ export default function App() {
               {onlineUsers.length > 1 && !isAsideOpen && (
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
               )}
-            </button>
-
-            {/* 2. Public Room Shortcut */}
-            <button
-              onClick={() => {
-                setSelectedRecipient("All");
-                setIsAsideOpen(false);
-              }}
-              className={`p-3 rounded-full transition-all active:scale-95 cursor-pointer ${
-                selectedRecipient === "All" && !isAsideOpen
-                  ? 'bg-accent text-white shadow-sm'
-                  : 'hover:bg-zinc-100 dark:hover:bg-zinc-800'
-              }`}
-              title="Public stream room"
-            >
-              <Radio size={20} />
             </button>
 
             {/* 3. Send Invite Modal trigger */}
