@@ -1,20 +1,43 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Realtime Chat
 
-# Run and deploy your AI Studio app
+A real-time chat application built with React, TypeScript, Express, and Socket.IO. The browser client and server communicate over Socket.IO for live messaging.
 
-This contains everything you need to run your app locally.
+## Requirements
 
-View your app in AI Studio: https://ai.studio/apps/b18a3770-12a6-4703-990c-34c43d026c8a
+- Node.js
+- npm
 
-## Run Locally
+## Getting started
 
-**Prerequisites:**  Node.js
+```bash
+npm install
+npm run dev
+```
 
+The development command starts the TypeScript server and the Vite-powered frontend. If the project needs environment values, copy `.env.example` to `.env` and configure them locally. Never commit credentials.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Production build
+
+```bash
+npm run build
+npm start
+```
+
+## Scripts
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Run the development server |
+| `npm run build` | Build the frontend and server bundle |
+| `npm start` | Start the built server |
+| `npm run lint` | Run the TypeScript check |
+
+## Tech stack
+
+React · TypeScript · Vite · Express · Socket.IO
+
+## Project layout
+
+- `src/` — application source
+- `server.ts` — server entry point
+- `index.html` — frontend entry document
