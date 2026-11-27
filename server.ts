@@ -4,6 +4,60 @@ import { Server } from "socket.io";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 
+// --- MasterAPI: saves messages so history survives restarts, and so messages sent to someone offline reach them later ---
+// Optional. Set MASTERAPI_URL and MASTERAPI_KEY to turn it on. If it is missing or down, chat works as before.
+const MASTERAPI_URL = (process.env.MASTERAPI_URL || "").replace(/\/$/, "");
+const MASTERAPI_KEY = process.env.MASTERAPI_KEY || "";
+const persistence = Boolean(MASTERAPI_URL && MASTERAPI_KEY);
+const HISTORY_COLLECTION = "chat_messages";
+const HISTORY_LIMIT = 100;
+const MAX_TEXT = 4000;
+
+async function masterApi(method: string, apiPath: string, body?: unknown): Promise<any> {
+  const res = await fetch(`${MASTERAPI_URL}/api/v1${apiPath}`, {
+    method,
+    headers: { "x-api-key": MASTERAPI_KEY, ...(body !== undefined ? { "content-type": "application/json" } : {}) },
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(8000),
+  });
+  if (!res.ok) throw new Error(`MasterAPI answered HTTP ${res.status}`);
+  return res.json();
+}
+
+/** Saves the words of a message. Pictures and voice notes are live-only, so history stays small. */
+async function saveMessage(msg: { id: string; sender: string; recipient: string; text: string; image?: string; audio?: string; timestamp: number }): Promise<boolean> {
+  if (!persistence) return false;
+  try {
+    await masterApi("POST", `/data/${HISTORY_COLLECTION}`, {
+      mid: msg.id,
+      sender: msg.sender,
+      recipient: msg.recipient,
+      text: msg.text || (msg.image ? "[picture]" : msg.audio ? "[voice message]" : ""),
+      timestamp: msg.timestamp,
+    });
+    return true;
+  } catch (e: any) {
+    console.warn(`History not saved: ${e.message}`);
+    return false;
+  }
+}
+
+/** The most recent messages this person sent or received, oldest first. */
+async function loadHistory(username: string): Promise<any[]> {
+  if (!persistence) return [];
+  try {
+    const r = await masterApi("POST", `/data/${HISTORY_COLLECTION}/query`, {
+      filter: { $or: [{ sender: username }, { recipient: username }] },
+      sort: "-timestamp",
+      limit: HISTORY_LIMIT,
+    });
+    return (r.data as any[]).reverse().map((d) => ({ id: d.mid || d.id, sender: d.sender, recipient: d.recipient, text: d.text, timestamp: d.timestamp }));
+  } catch (e: any) {
+    console.warn(`History not loaded: ${e.message}`);
+    return [];
+  }
+}
+
 interface UserProfile {
   username: string;
   displayPicture: string | null;
@@ -17,7 +71,7 @@ async function startServer() {
     cors: { origin: "*" },
   });
 
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT) || 3000;
 
   // Map of ip -> UserProfile
   const ipProfiles = new Map<string, UserProfile>();
@@ -73,6 +127,10 @@ async function startServer() {
       socket.emit("join_success", { username: finalName, displayPicture });
       broadcastUserList();
       io.emit("user_joined", finalName);
+      // Earlier conversations, including messages sent while this person was offline.
+      loadHistory(finalName).then((history) => {
+        if (history.length) socket.emit("history", history);
+      });
     });
 
     socket.on("update_profile", (data: { displayPicture: string }) => {
@@ -85,16 +143,21 @@ async function startServer() {
     });
 
     socket.on("chat_message", (msg) => {
+      // Only people who have joined can send, and the sender is whoever this connection really is.
+      // (The browser's own "sender" field is ignored, so nobody can pose as someone else.)
+      const me = ipProfiles.get(ip);
+      if (!me || !me.username || !msg || typeof msg !== "object") return;
+      if (typeof msg.text === "string" && msg.text.length > MAX_TEXT) return;
       // Must have recipient, no public chat
       if (msg.recipient && msg.recipient !== "All" && msg.recipient !== "") {
+        msg.sender = me.username;
+
         // Find recipient's IP profile
         let recipientProfile: UserProfile | undefined;
-        let recipientIp: string | undefined;
 
-        for (const [rIp, profile] of ipProfiles.entries()) {
+        for (const [, profile] of ipProfiles.entries()) {
           if (profile.username === msg.recipient) {
             recipientProfile = profile;
-            recipientIp = rIp;
             break;
           }
         }
@@ -102,6 +165,13 @@ async function startServer() {
         if (recipientProfile && recipientProfile.socketId) {
           io.to(recipientProfile.socketId).emit("chat_message", msg);
           socket.emit("chat_message", msg); // Also emit to sender
+          saveMessage(msg);
+        } else if (persistence) {
+          // The recipient is offline: keep it, and they will get it when they join.
+          // The sender sees it only once it is safely kept.
+          saveMessage(msg).then((kept) => {
+            if (kept) socket.emit("chat_message", msg);
+          });
         }
       }
     });

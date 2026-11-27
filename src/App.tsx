@@ -426,7 +426,19 @@ export default function App() {
       }
     };
 
+    // Earlier conversations sent by the server after joining: merged in quietly (no sound, no pop-ups).
+    const handleHistory = (history: Message[]) => {
+      if (!Array.isArray(history)) return;
+      setMessages((prev) => {
+        const key = (m: Message) => `${m.sender}|${m.id}`;
+        const have = new Set(prev.map(key));
+        const fresh = history.filter((m) => !have.has(key(m)));
+        return fresh.length ? [...prev, ...fresh].sort((a, b) => a.timestamp - b.timestamp) : prev;
+      });
+    };
+
     socket.on('chat_message', handleChatMessage);
+    socket.on('history', handleHistory);
     socket.on('user_list', handleUserList);
     socket.on('join_error', handleJoinError);
     socket.on('user_joined', handleUserJoined);
@@ -434,6 +446,7 @@ export default function App() {
 
     return () => {
       socket.off('chat_message', handleChatMessage);
+      socket.off('history', handleHistory);
       socket.off('user_list', handleUserList);
       socket.off('join_error', handleJoinError);
       socket.off('user_joined', handleUserJoined);
